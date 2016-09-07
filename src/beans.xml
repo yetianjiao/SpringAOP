@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:p="http://www.springframework.org/schema/p" 
+	xmlns:aop="http://www.springframework.org/schema/aop" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+           http://www.springframework.org/schema/aop
+           http://www.springframework.org/schema/aop/spring-aop-3.1.xsd">
+	
+	<bean id="person" class="org.Spring.vo.Person"/>
+	<bean id="user" class="org.Spring.vo.User"/>
+	<bean id="authAspect" class="org.Spring.aop.AuthAspect"/>
+	
+	<aop:config>
+		<!-- 把容器中的普通bean authAspect变成切面bean -->
+		<aop:aspect ref="authAspect">
+			<!-- 
+				before指定是在目标方法之前把authAspect中的auth方法作为Advice织入，
+				pointcut指定的execution限定的
+				任何返回值，org.org.Spring.vo.下任何类的任何方法的任何参数
+			 -->
+			<aop:before method="auth" pointcut="execution(* org.Spring.vo.*.*(..))"/>
+		</aop:aspect>
+		
+		<aop:aspect ref="authAspect">
+			<aop:after method="log" pointcut="execution(String org.Spring.vo.*.*())" />
+		</aop:aspect>
+
+		<aop:aspect ref="authAspect">
+			<aop:after-throwing 
+				method="repairException" 
+				pointcut="execution(* org.Spring.vo.*.*(..))" 
+				throwing="ex"/>
+		</aop:aspect>
+		
+		<aop:aspect ref="authAspect">
+			<aop:after-returning
+				method="afterSpeak" 
+				pointcut="execution(String org.Spring.vo.*.*(..))" 
+				returning="detail"
+				/>
+		</aop:aspect>
+		
+		<aop:aspect ref="authAspect">
+			<aop:around method="arounding" 
+			pointcut="execution(String org.Spring.vo.*.*(..))"
+		/>
+			
+		</aop:aspect>
+		
+	</aop:config>
+	
+</beans>
